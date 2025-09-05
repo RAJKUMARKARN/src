@@ -16,10 +16,10 @@ import {
 
 
 // Ad CRUD endpoints
-router.post('/', createAd);
-router.get('/', getAds);
-router.get('/:id', getAdById);
-router.put('/:id', updateAd);
-router.delete('/:id', deleteAd);
+router.post("/", createAd);
+router.get("/", getAds);
+router.get("/:id", getAdById);
+router.put("/:id", updateAd);
+router.delete("/:id", deleteAd);
 
 export default router;

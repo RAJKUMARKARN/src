@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 
 const targetingSchema = new mongoose.Schema(
   {
-    audience: [{ type: String }], // removed index:true
+    audience: [{ type: String }],
     geo: {
       country: { type: String },
       region: { type: String },
@@ -17,8 +17,8 @@ const scheduleSchema = new mongoose.Schema(
   {
     startDate: { type: Date, required: true },
     endDate: { type: Date, required: true },
-    daysOfWeek: [{ type: Number, min: 0, max: 6 }], // 0 = Sunday
-    timesOfDay: [{ start: String, end: String }] // "09:00", "17:30"
+    daysOfWeek: [{ type: Number, min: 0, max: 6 }],
+    timesOfDay: [{ start: String, end: String }]
   },
   { _id: false }
 );
@@ -43,31 +43,45 @@ const trackingSchema = new mongoose.Schema(
 
 const adSchema = new mongoose.Schema(
   {
-    advertiserId: { type: mongoose.Schema.Types.ObjectId, ref: 'Advertiser', required: true },
+    advertiserId: { type: mongoose.Schema.Types.ObjectId, ref: 'AdAccount', required: true },
+
     title: { type: String, required: true },
-    description: { type: String },
-    imageUrl: { type: String },
-    link: { type: String },
+    description: { type: String, maxlength: 500 },
+
+    adType: { type: String, enum: ['Image', 'Video'], required: true },
+    contentUrl: { type: String },
+
+    adElement: { type: String, enum: ['Website', 'Form', 'App Installation'], required: true },
+    websiteLink: { type: String },
+    formFields: [{ type: String }],
+    appLinks: {
+      appStore: { type: String },
+      playStore: { type: String }
+    },
+
+    targetAgeGroup: { type: String, enum: ['Teen', 'Young Adult', 'Middle Age', 'Senior'] },
+    targetInterests: [{ type: String }],
+
     targeting: targetingSchema,
     schedule: scheduleSchema,
     bidding: biddingSchema,
     tracking: trackingSchema,
-    billing: {
-      spent: { type: Number, default: 0 }
-    },
-    status: { type: String, enum: ['active', 'paused', 'expired', 'draft'], default: 'draft' }
+
+    adModel: { type: String, enum: ['Free', 'Premium', 'Elite', 'Ultimate'], required: true },
+
+    status: { type: String, enum: ['active', 'paused', 'expired', 'draft'], default: 'draft' },
+
+    uniqueUrl: { type: String, unique: true }
   },
   { timestamps: true }
 );
 
-// ✅ Keep only schema-level indexes
-adSchema.index({ 'targeting.audience': 1 });
+// ✅ Indexes
+adSchema.index({ advertiserId: 1 });
+adSchema.index({ status: 1 });
 adSchema.index({ 'targeting.geo.country': 1, 'targeting.geo.region': 1, 'targeting.geo.city': 1 });
-adSchema.index({ 'schedule.startDate': 1, 'schedule.endDate': 1 });
-adSchema.index({ status: 1 }); // added index for faster status queries
-adSchema.index({ advertiserId: 1 }); // added index for filtering by advertiser
 
-// ✅ Virtual field for checking if ad is running
+// ✅ Virtual
 adSchema.virtual('isRunning').get(function () {
   const now = new Date();
   return (
