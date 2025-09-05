@@ -1,30 +1,20 @@
 import AdAccount from "../models/AdAccount.js";
-import User from "../models/User.js";
 
-// Create Ad Account + auto-create User
+// Create new Ad Account
 export async function createAdAccount(req, res) {
   try {
-    // 1. Auto-generate a user
-    const user = new User({ email: req.body.businessEmail, role: "advertiser" });
-    await user.save();
+    const { userId } = req.body;
 
-    // 2. Prevent duplicate ad accounts
-    const existingAccount = await AdAccount.findOne({ userId: user._id });
+    // Prevent duplicate account creation
+    const existingAccount = await AdAccount.findOne({ userId });
     if (existingAccount) {
       return res.status(400).json({ error: "Ad account already exists for this user" });
     }
 
-    // 3. Create ad account linked to userId
-    const adAccount = new AdAccount({
-      ...req.body,
-      userId: user._id,
-    });
+    const adAccount = new AdAccount(req.body);
     await adAccount.save();
 
-    res.status(201).json({
-      message: "Ad account created successfully",
-      adAccount,
-    });
+    res.status(201).json({ message: "Ad account created successfully", adAccount });
   } catch (err) {
     res.status(400).json({ error: err.message });
   }

@@ -1,4 +1,4 @@
-import express from 'express';
+import express from "express";
 const router = express.Router();
 
 import {
@@ -7,13 +7,7 @@ import {
   getAdById,
   updateAd,
   deleteAd,
-} from '../controllers/adController.js';
-
-// router.get("/", (req, res) => {
-//   res.json({ message: "Ads route working 🚀" });
-// });
-
-
+} from "../controllers/adController.js";
 
 // Ad CRUD endpoints
 router.post("/", createAd);
