@@ -1,7 +1,8 @@
 import mongoose from "mongoose";
-import bcrypt from "bcryptjs"; // npm i bcryptjs
+import bcrypt from "bcryptjs";
 
-const userSchema = new mongoose.Schema(
+// Define advertiser schema
+const advertiserSchema = new mongoose.Schema(
   {
     email: {
       type: String,
@@ -12,29 +13,40 @@ const userSchema = new mongoose.Schema(
     },
     password: {
       type: String,
-      required: true, // keep required, because you’ll need login later
+      required: true,
       minlength: 6,
+    },
+    companyName: {
+      type: String,
+      required: true,
+      trim: true,
     },
     role: {
       type: String,
-      enum: ["advertiser", "publisher", "admin"],
+      enum: ["advertiser"],
       default: "advertiser",
     },
   },
   { timestamps: true }
 );
 
-// ✅ Hash password before saving
-userSchema.pre("save", async function (next) {
+// Hash password before saving
+advertiserSchema.pre("save", async function (next) {
   if (!this.isModified("password")) return next();
   const salt = await bcrypt.genSalt(10);
   this.password = await bcrypt.hash(this.password, salt);
   next();
 });
 
-// ✅ Compare password for login
-userSchema.methods.matchPassword = async function (enteredPassword) {
+// Compare password
+advertiserSchema.methods.matchPassword = async function (enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.password);
 };
 
-export default mongoose.model("User", userSchema);
+// Export model safely (avoid OverwriteModelError)
+const Advertiser =
+  mongoose.models.Advertiser || mongoose.model("Advertiser", advertiserSchema);
+
+export default Advertiser;
+
+

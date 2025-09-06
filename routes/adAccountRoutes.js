@@ -7,7 +7,7 @@ import {
 
 const router = express.Router();
 
-// Create new ad account
+// Create new ad account (auto-creates User)
 router.post("/account/create", createAdAccount);
 
 // Get ad account by userId

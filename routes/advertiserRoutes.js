@@ -1,18 +1,19 @@
-import express from 'express';
+import express from "express";
 import {
-  createAdvertiser,
-  getAdvertiserById,
-} from '../controllers/advertiserController.js';
+  registerAdvertiser,   // ✅ correct name
+  loginAdvertiser,
+  getAllAdvertisers,
+} from "../controllers/advertiserController.js";
 
 const router = express.Router();
 
-router.get("/", (req, res) => {
-  res.json({ message: "Advertisers route working 🚀" });
-});
+// Register new advertiser
+router.post("/register", registerAdvertiser);
 
+// Login
+router.post("/login", loginAdvertiser);
 
-// Advertiser endpoints
-router.post('/', createAdvertiser);
-router.get('/:id', getAdvertiserById);
+// Get all advertisers
+router.get("/", getAllAdvertisers);
 
 export default router;
