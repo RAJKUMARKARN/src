@@ -16,14 +16,15 @@ import { notFound, errorHandler } from "./middleware/errorHandler.js";
 const app = express();
 
 // ================== Middlewares ==================
+// Parse JSON bodies
+app.use(express.json());
 app.use(cors());
 app.use(morgan("dev"));
 
 // Stripe (or other webhooks) require raw body
 app.use("/webhooks", bodyParser.raw({ type: "application/json" }));
 
-// Parse JSON bodies
-app.use(express.json());
+
 
 // ================== API Routes ==================
 app.use("/ads", adsRoutes);               // Ad CRUD

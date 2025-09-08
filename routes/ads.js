@@ -7,10 +7,18 @@ import {
   getAdById,
   updateAd,
   deleteAd,
+  publishAd,
 } from "../controllers/adController.js";
 
-// Ad CRUD endpoints
-router.post("/", createAd);
+import { upload } from "../middleware/upload.js"; // ✅ keep this one only
+
+// Create Draft Ad with file upload
+router.post("/", upload.single("media"), createAd);
+
+// Publish Ad
+router.post("/publish/:adId", publishAd);
+
+// Existing CRUD endpoints
 router.get("/", getAds);
 router.get("/:id", getAdById);
 router.put("/:id", updateAd);
